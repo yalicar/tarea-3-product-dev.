@@ -2,6 +2,8 @@ library(shiny)
 library(ggplot2)
 library(dplyr)
 library(DT)
+
+# ---- Interfaz de usuario ----
 ui <- fluidPage(
     titlePanel("Intereracciones del usuario con graficas"),
     tabsetPanel(
@@ -36,9 +38,9 @@ ui <- fluidPage(
         )
     )
 )
-
+# ---- Server ----
 server <- function(input, output) {
-# ---- Graficas del primer panel
+ # ---- Graficas del primer panel
     output$grafica_base_r <- renderPlot({
         plot(
             mtcars$wt,
@@ -61,7 +63,7 @@ server <- function(input, output) {
         ylab("Kilates") +
         ggtitle("Precio de diamantes por kilates")
     })
-# ---- Graficas del segundo panel ----
+ # ---- Graficas del segundo panel ----
     selected <- reactiveVal(
         rep(
             0,
@@ -90,7 +92,7 @@ server <- function(input, output) {
         l1[changes] <- l2[changes]
         return(l1)
 }
-    # ---- Seleccion de puntos + click para cambiar el color de los puntos ----
+# ---- Seleccion de puntos + click para cambiar el color de los puntos ----
     observeEvent(
         input$brsh, {
             brushed <- brushedPoints(
@@ -142,7 +144,7 @@ server <- function(input, output) {
             ax(updater(selected(), selected2()))
         }
     )
-    # ---- Doble click para quitar el color ----
+# ---- Doble click para quitar el color ----
     observeEvent(
         input$dblclk, {
             selected(rep(0, nrow(mtcars)))
@@ -169,7 +171,6 @@ server <- function(input, output) {
     }, res = 96
     )
 # ---- Tabla ----
-
     output$click_data <- renderPrint({
         list(
             click_xy = c(
