@@ -80,6 +80,9 @@ server <- function(input, output) {
             nrow(mtcars)
         )
     )
+    df_clk <- reactiveVal(
+        data.frame(0,0)
+    )
     updater <- function(l1, l2) {
         changes <- ifelse(l1 == 0 | l2 != 2, F, T)
         l1[changes] <- l2[changes]
@@ -148,6 +151,7 @@ server <- function(input, output) {
     }, res = 96
     )
 # ---- Tabla ----
+
     output$click_data <- renderPrint({
         list(
             click_xy = c(
@@ -172,12 +176,15 @@ server <- function(input, output) {
             )
         )
     })
+
     output$mtcars_tbl <- DT::renderDataTable(
+        
         datatable(
-            mtcars,
+            df_clk(),
             options = list(
-                pageLength = 10
+                pageLength = 5
             )
+
         )
     )
 
