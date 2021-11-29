@@ -98,9 +98,16 @@ server <- function(input, output) {
                 input$brsh,
                 allRows = TRUE
             )$selected_
+            brushed2 <- brushedPoints(
+                mtcars,
+                input$brsh
+            )
             selected(replace((brushed | selected()),
             (brushed | selected()) == TRUE, 1))
             ax(updater(selected2(), selected()))
+            output$mtcars_tbl <- renderDT(
+                brushed2
+            )
         }
     )
     observeEvent(
@@ -110,9 +117,18 @@ server <- function(input, output) {
                 input$clk,
                 allRows = TRUE
             )$selected_
+            cliked2 <- nearPoints(
+                mtcars,
+                input$clk
+            )
             selected((cliked | selected()) * 1)
             ax(updater(selected2(), selected()))
+            df_clk(data.frame(input$clk$x,input$clk$y))
+            output$mtcars_tbl <- renderDT(
+                cliked2
+            )
         }
+
     )
     observeEvent(
         input$hvr, {
@@ -126,14 +142,16 @@ server <- function(input, output) {
             ax(updater(selected(), selected2()))
         }
     )
-
-
     # ---- Doble click para quitar el color ----
     observeEvent(
         input$dblclk, {
             selected(rep(0, nrow(mtcars)))
             selected2(rep(0, nrow(mtcars)))
             ax(updater(selected2(), selected()))
+            df_clk(data.frame(0,0))
+            output$mtcars_tbl <- renderDT(
+                NULL
+            )
         }
     )
     output$plot_click_option <- renderPlot({
@@ -168,28 +186,12 @@ server <- function(input, output) {
             ),
             brush_xy = c(
                 input$brsh$xmin,
+                input$brsh$xmax,
                 input$brsh$ymin,
-                input$brus$xmax,
-                input$brsh$ymax,
-                ncol = 2,
-                byrow = TRUE
+                input$brsh$ymax
             )
         )
     })
-
-    output$mtcars_tbl <- DT::renderDataTable(
-        
-        datatable(
-            df_clk(),
-            options = list(
-                pageLength = 5
-            )
-
-        )
-    )
-
-       
-
 }
 
 shinyApp(ui, server)
