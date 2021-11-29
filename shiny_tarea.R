@@ -29,9 +29,10 @@ ui <- fluidPage(
             verbatimTextOutput(
                 "click_data"
             ),
-            tableOutput(
+            
+            DT::dataTableOutput(
                 "mtcars_tbl"
-            )
+            ),
         )
     )
 )
@@ -171,29 +172,17 @@ server <- function(input, output) {
             )
         )
     })
-    output$mtcars_tbl <- renderTable({
-        df <- nearPoints(
+    output$mtcars_tbl <- DT::renderDataTable(
+        datatable(
             mtcars,
-            input$clk,
-            xvar = "wt",
-            yvar = "mpg",
-            threshold = 10,
-            maxpoints = 1
+            options = list(
+                pageLength = 10
+            )
         )
-        df
-    })
-    print(a)
+    )
+
+       
+
 }
 
 shinyApp(ui, server)
-
-a <- c(1, 0, 0, 1, 0)
-b <- c(0, 0, 2, 2, 2)
-updater <- function(l1, l2) {
-  changes <- ifelse(l1 == 0 | l2 != 2, F, T)
-  l1[changes] <- l2[changes]
-  changes <- ifelse(l1 == 0 | l2 != 0, T, F)
-  l1[changes] <- l2[changes]
-  return(l1)
-}
-updater(a, b)
